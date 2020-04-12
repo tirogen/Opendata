@@ -62,8 +62,8 @@ app.get('/covid19/dtd', (req, res) => {
 });
 
 function covid19(data, isDTD){
+    data = JSON.parse(JSON.stringify(data).replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\&/g, "&amp;").replace(/\'/g, "&apos;"));
     let xml = '<?xml version="1.0" encoding="UTF-8"?><covid19>';
-
     if(isDTD) xml += `
     <!DOCTYPE covid19 [
        <!ELEMENT covid19 [people*] >
@@ -78,7 +78,6 @@ function covid19(data, isDTD){
        <!ELEMENT province_onset (#PCDATA)>
        <!ELEMENT district_onset (#PCDATA)>
     ]>`;
-
     data.forEach((item, i) => {
       const { no, age, sex, nationality } = item;
       province_isolation = item['Province of isolation'];
@@ -99,9 +98,9 @@ function covid19(data, isDTD){
           <district_onset>${district_onset}</district_onset>
         </people>
       `;
-      connection.query('insert into covid19 set no=?, age=?, sex=?, nationality=?, province_isolation=?, notification_date=?, announce_date=?, province_onset=?, district_onset=?', [no, age, sex, nationality, province_isolation, notification_date, announce_date, province_onset, district_onset], function (error, results, fields) {
-        if (error) throw error;
-      });
+        connection.query('insert into covid19 set no=?, age=?, sex=?, nationality=?, province_isolation=?, notification_date=?, announce_date=?, province_onset=?, district_onset=?', [no, age, sex, nationality, province_isolation, notification_date, announce_date, province_onset, district_onset],  (error) => {
+          if (error) throw error;
+        });
     });
     xml += '</covid19>';
     return xml;
@@ -117,53 +116,87 @@ app.get('/fish/xml', (req, res) => {
       const data = response.data.result.records;
       const xml = fish(data, false);
       const fileName = Math.random().toString(36).substr(2, 10);
-      fs.writeFileSync(`${__dirname}/public/download/xml_covid_${fileName}.xml`, xml);
-      res.download(`${__dirname}/public/download/xml_covid_${fileName}.xml`);
+      fs.writeFileSync(`${__dirname}/public/download/xml_fish_${fileName}.xml`, xml);
+      res.download(`${__dirname}/public/download/xml_fish_${fileName}.xml`);
+    })
+});
+
+app.get('/fish/dtd', (req, res) => {
+  axios.get('https://opend.data.go.th/get-ckan/datastore_search?resource_id=ce7f4a78-71db-4754-9084-edca971903bd&limit=20', {
+      headers: {
+        'api-key': '2KnKI5JI75np3mY8J5MIsvfaGpwBHnDS'
+      }
+    })
+    .then((response) => {
+      const data = response.data.result.records;
+      const xml = fish(data, true);
+      const fileName = Math.random().toString(36).substr(2, 10);
+      fs.writeFileSync(`${__dirname}/public/download/dtd_fish_${fileName}.xml`, xml);
+      res.download(`${__dirname}/public/download/dtd_fish_${fileName}.xml`);
     })
 });
 
 function fish(data, isDTD){
-    let xml = '<?xml version="1.0" encoding="UTF-8"?><covid19>';
-
+    data = JSON.parse(JSON.stringify(data).replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\&/g, "&amp;").replace(/\'/g, "&apos;"));
+    let xml = '<?xml version="1.0" encoding="UTF-8"?><aquatic_animals>';
     if(isDTD) xml += `
-    <!DOCTYPE covid19 [
-       <!ELEMENT covid19 [people*] >
-       <!ELEMENT people (no,age,sex,nationality,province_isolation,notification_date,announce_date,province_onset,district_onset)>
+    <!DOCTYPE fish [
+       <!ELEMENT fish (no, kind, name, local_name, common_name, scientific_name, family_name, public_year, biology, habitat, status, image_source, image_name, image_path_small, image_path_big)>
        <!ELEMENT no (#PCDATA)>
-       <!ELEMENT age (#PCDATA)>
-       <!ELEMENT sex (#PCDATA)>
-       <!ELEMENT nationality (#PCDATA)>
-       <!ELEMENT province_isolation (#PCDATA)>
-       <!ELEMENT notification_date (#PCDATA)>
-       <!ELEMENT announce_date (#PCDATA)>
-       <!ELEMENT province_onset (#PCDATA)>
-       <!ELEMENT district_onset (#PCDATA)>
+       <!ELEMENT kind (#PCDATA)>
+       <!ELEMENT name (#PCDATA)>
+       <!ELEMENT local_name (#PCDATA)>
+       <!ELEMENT common_name (#PCDATA)>
+       <!ELEMENT scientific_name (#PCDATA)>
+       <!ELEMENT family_name (#PCDATA)>
+       <!ELEMENT public_year (#PCDATA)>
+       <!ELEMENT biology (#PCDATA)>
+       <!ELEMENT habitat (#PCDATA)>
+       <!ELEMENT status (#PCDATA)>
+       <!ELEMENT image_source (#PCDATA)>
+       <!ELEMENT image_name (#PCDATA)>
+       <!ELEMENT image_path_small (#PCDATA)>
+       <!ELEMENT image_path_big (#PCDATA)>
     ]>`;
-
     data.forEach((item, i) => {
-      const { no, age, sex, nationality } = item;
-      province_isolation = item['Province of isolation'];
-      notification_date = item['Notification date'];
-      announce_date = item['Announce Date'];
-      province_onset = item['Province of onset'];
-      district_onset = item['District of onset'];
+      no = item['รหัสสัตว์น้ำ'];
+      kind = item['ชนิดสัตว์น้ำ'];
+      name = item['ชื่อไทย'];
+      local_name = item['ชื่อท้องถิ่น'];
+      common_name = item['ชื่อสามัญ'];
+      scientific_name = item['ชื่อวิทยาศาสตร์'];
+      family_name = item['ชื่อวงศ์สัตว์น้ำ'];
+      public_year = item['ชื่อ/ปีที่เผยแพร่'];
+      biology = item['ลักษณะชีววิทยาทั่วไป'];
+      habitat = item['ถิ่นที่อาศัย'];
+      status = item['สถานะภาพ'];
+      image_source = item['ที่มาของภาพ'];
+      image_name = item['ชื่อภาพ'];
+      image_path_small = item['Path เก็บภาพ (เล็ก)'];
+      image_path_big = item['Path เก็บภาพ (ใหญ่)'];
       xml += `
-        <people>
+        <fish>
           <no>${no}</no>
-          <age>${age}</age>
-          <sex>${sex}</sex>
-          <nationality>${nationality}</nationality>
-          <province_isolation>${province_isolation}</province_isolation>
-          <notification_date>${notification_date}</notification_date>
-          <announce_date>${announce_date}</announce_date>
-          <province_onset>${province_onset}</province_onset>
-          <district_onset>${district_onset}</district_onset>
-        </people>
+          <kind>${kind}</kind>
+          <name>${name}</name>
+          <local_name>${local_name}</local_name>
+          <common_name>${common_name}</common_name>
+          <scientific_name>${scientific_name}</scientific_name>
+          <family_name>${family_name}</family_name>
+          <public_year>${public_year}</public_year>
+          <biology>${biology}</biology>
+          <habitat>${habitat}</habitat>
+          <status>${status}</status>
+          <image_source>${image_source}</image_source>
+          <image_name>${image_name}</image_name>
+          <image_path_small>${image_path_small}</image_path_small>
+          <image_path_big>${image_path_big}</image_path_big>
+        </fish>
       `;
-      connection.query('insert into covid19 set no=?, age=?, sex=?, nationality=?, province_isolation=?, notification_date=?, announce_date=?, province_onset=?, district_onset=?', [no, age, sex, nationality, province_isolation, notification_date, announce_date, province_onset, district_onset], function (error, results, fields) {
-        if (error) throw error;
-      });
+        connection.query('insert into fish set no=?, kind=?, name=?, local_name=?, common_name=?, scientific_name=?, family_name=?, public_year=?, biology=?, habitat=?, status=?, image_source=?, image_name=?, image_path_small=?, image_path_big=?', [no, kind, name, local_name, common_name, scientific_name, family_name, public_year, biology, habitat, status, image_source, image_name, image_path_small, image_path_big], (error) => {
+          if (error) throw error;
+        });
     });
-    xml += '</covid19>';
+    xml += '</aquatic_animals>';
     return xml;
 }
