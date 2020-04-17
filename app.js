@@ -63,21 +63,56 @@ app.get('/covid19/dtd', (req, res) => {
 
 function covid19(data, isDTD){
     data = JSON.parse(JSON.stringify(data).replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\&/g, "&amp;").replace(/\'/g, "&apos;"));
-    let xml = '<?xml version="1.0" encoding="UTF-8"?><covid19>';
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>';
     if(isDTD) xml += `
     <!DOCTYPE covid19 [
-       <!ELEMENT covid19 [people*] >
-       <!ELEMENT people (no,age,sex,nationality,province_isolation,notification_date,announce_date,province_onset,district_onset)>
-       <!ELEMENT no (#PCDATA)>
-       <!ELEMENT age (#PCDATA)>
-       <!ELEMENT sex (#PCDATA)>
-       <!ELEMENT nationality (#PCDATA)>
-       <!ELEMENT province_isolation (#PCDATA)>
-       <!ELEMENT notification_date (#PCDATA)>
-       <!ELEMENT announce_date (#PCDATA)>
-       <!ELEMENT province_onset (#PCDATA)>
-       <!ELEMENT district_onset (#PCDATA)>
+      <!ELEMENT covid19 (people)+>
+      <!ATTLIST covid19
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT people (no,age,sex,nationality,province_isolation,
+                    notification_date,announce_date,province_onset,
+                    district_onset)>
+      <!ATTLIST people
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT no (#PCDATA)>
+      <!ATTLIST no
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT age (#PCDATA)>
+      <!ATTLIST age
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT sex (#PCDATA)>
+      <!ATTLIST sex
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT nationality (#PCDATA)>
+      <!ATTLIST nationality
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT province_isolation (#PCDATA)>
+      <!ATTLIST province_isolation
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT notification_date (#PCDATA)>
+      <!ATTLIST notification_date
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT announce_date (#PCDATA)>
+      <!ATTLIST announce_date
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT province_onset (#PCDATA)>
+      <!ATTLIST province_onset
+      xmlns CDATA #FIXED ''>
+
+      <!ELEMENT district_onset (#PCDATA)>
+      <!ATTLIST district_onset
+      xmlns CDATA #FIXED ''>
     ]>`;
+    xml += '<covid19>';
     data.forEach((item, i) => {
       const { no, age, sex, nationality } = item;
       province_isolation = item['Province of isolation'];
@@ -138,26 +173,81 @@ app.get('/fish/dtd', (req, res) => {
 
 function fish(data, isDTD){
     data = JSON.parse(JSON.stringify(data).replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\&/g, "&amp;").replace(/\'/g, "&apos;"));
-    let xml = '<?xml version="1.0" encoding="UTF-8"?><aquatic_animals>';
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>';
     if(isDTD) xml += `
     <!DOCTYPE fish [
-       <!ELEMENT fish (no, kind, name, local_name, common_name, scientific_name, family_name, public_year, biology, habitat, status, image_source, image_name, image_path_small, image_path_big)>
-       <!ELEMENT no (#PCDATA)>
-       <!ELEMENT kind (#PCDATA)>
-       <!ELEMENT name (#PCDATA)>
-       <!ELEMENT local_name (#PCDATA)>
-       <!ELEMENT common_name (#PCDATA)>
-       <!ELEMENT scientific_name (#PCDATA)>
-       <!ELEMENT family_name (#PCDATA)>
-       <!ELEMENT public_year (#PCDATA)>
-       <!ELEMENT biology (#PCDATA)>
-       <!ELEMENT habitat (#PCDATA)>
-       <!ELEMENT status (#PCDATA)>
-       <!ELEMENT image_source (#PCDATA)>
-       <!ELEMENT image_name (#PCDATA)>
-       <!ELEMENT image_path_small (#PCDATA)>
-       <!ELEMENT image_path_big (#PCDATA)>
+      <!ELEMENT aquatic_animals (fish)+>
+      <!ATTLIST aquatic_animals
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT fish (no,kind,name,local_name,common_name,scientific_name,
+                      family_name,public_year,biology,habitat,status,
+                      image_source,image_name,image_path_small,
+                      image_path_big)>
+      <!ATTLIST fish
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT no (#PCDATA)>
+      <!ATTLIST no
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT kind (#PCDATA)>
+      <!ATTLIST kind
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT name (#PCDATA)>
+      <!ATTLIST name
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT local_name (#PCDATA)>
+      <!ATTLIST local_name
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT common_name (#PCDATA)>
+      <!ATTLIST common_name
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT scientific_name (#PCDATA)>
+      <!ATTLIST scientific_name
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT family_name (#PCDATA)>
+      <!ATTLIST family_name
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT public_year (#PCDATA)>
+      <!ATTLIST public_year
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT biology (#PCDATA)>
+      <!ATTLIST biology
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT habitat (#PCDATA)>
+      <!ATTLIST habitat
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT status (#PCDATA)>
+      <!ATTLIST status
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT image_source (#PCDATA)>
+      <!ATTLIST image_source
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT image_name (#PCDATA)>
+      <!ATTLIST image_name
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT image_path_small (#PCDATA)>
+      <!ATTLIST image_path_small
+        xmlns CDATA #FIXED ''>
+
+      <!ELEMENT image_path_big (#PCDATA)>
+      <!ATTLIST image_path_big
+        xmlns CDATA #FIXED ''>
     ]>`;
+    xml += '<aquatic_animals>';
     data.forEach((item, i) => {
       no = item['รหัสสัตว์น้ำ'];
       kind = item['ชนิดสัตว์น้ำ'];
